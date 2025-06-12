@@ -12,7 +12,8 @@ const DonKham = sequelize.define('donKham', {
   mucDoBenh: DataTypes.STRING,
   dieuTri: DataTypes.STRING
 }, {
-  timestamps: false
+  timestamps: false,
+  tableName: 'donkhams'
 });
 
 DonKham.belongsTo(BenhNhan, { foreignKey: 'benhNhanId' });

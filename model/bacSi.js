@@ -10,13 +10,14 @@ const BacSi = sequelize.define('bacSi', {
   namKinhNghiem: DataTypes.INTEGER,
   caTruc: DataTypes.STRING
 }, {
+  // tableName: 'bacsis',
   timestamps: false
 });
 
 BacSi.belongsTo(ThongTinCaNhan, { foreignKey: 'thongTinCaNhanId' });
 
 (async () => {
-  await caNhan.sync({ alter: true })
+  await BacSi.sync({ alter: true })
 })();
 
 module.exports = BacSi

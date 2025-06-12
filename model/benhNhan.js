@@ -9,13 +9,14 @@ const BenhNhan = sequelize.define('benhNhan', {
   },
   diaChi: DataTypes.STRING
 }, {
+  tableName: 'benhnhans',
   timestamps: false
 });
 
 BenhNhan.belongsTo(ThongTinCaNhan, { foreignKey: 'thongTinCaNhanId' });
 
 (async () => {
-  await caNhan.sync({ alter: true })
+  await BenhNhan.sync({ alter: true })
 })();
 
 module.exports = BenhNhan

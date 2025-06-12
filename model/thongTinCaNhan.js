@@ -15,8 +15,9 @@ const ThongTinCaNhan = sequelize.define('thongTinCaNhan', {
   ten: DataTypes.STRING,
   ngaySinh: DataTypes.DATE,
   gioiTinh: DataTypes.STRING,
-  sdt: DataTypes.STRING
+  sdt: DataTypes.STRING,
 }, {
+  tableName: 'thongtincanhans',
   timestamps: false
 });
 
