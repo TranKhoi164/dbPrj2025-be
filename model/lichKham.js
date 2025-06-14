@@ -13,8 +13,8 @@ const LichKham = sequelize.define('lichKham', {
   timestamps: false
 });
 
-(async () => {
-  await LichKham.sync({ alter: true })
-})();
+// (async () => {
+//   await LichKham.sync({ alter: true })
+// })();
 
 module.exports = LichKham

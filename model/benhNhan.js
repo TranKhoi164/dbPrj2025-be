@@ -13,10 +13,8 @@ const BenhNhan = sequelize.define('benhNhan', {
   timestamps: false
 });
 
-BenhNhan.belongsTo(ThongTinCaNhan, { foreignKey: 'thongTinCaNhanId' });
-
-(async () => {
-  await BenhNhan.sync({ alter: true })
-})();
+// (async () => {
+//   await BenhNhan.sync({ alter: true })
+// })();
 
 module.exports = BenhNhan

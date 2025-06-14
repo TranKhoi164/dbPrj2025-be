@@ -1,5 +1,7 @@
 const { sequelize } = require('../databaseConnection');
 const { DataTypes } = require('sequelize');
+const BacSi = require('./bacSi')
+const BenhNhan = require('./benhNhan')
 
 const ThongTinCaNhan = sequelize.define('thongTinCaNhan', {
   id: {
@@ -20,9 +22,5 @@ const ThongTinCaNhan = sequelize.define('thongTinCaNhan', {
   tableName: 'thongtincanhans',
   timestamps: false
 });
-
-(async () => {
-  await ThongTinCaNhan.sync({ alter: true })
-})();
 
 module.exports = ThongTinCaNhan

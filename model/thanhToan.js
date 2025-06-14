@@ -20,8 +20,8 @@ const ThanhToan = sequelize.define('thanhToan', {
 ThanhToan.belongsTo(BenhNhan, { foreignKey: 'benhNhanId' });
 ThanhToan.belongsTo(DonKham, { foreignKey: 'donKhamId' });
 
-(async () => {
-  await ThanhToan.sync({ alter: true })
-})();
+// (async () => {
+//   await ThanhToan.sync({ alter: true })
+// })();
 
 module.exports = ThanhToan

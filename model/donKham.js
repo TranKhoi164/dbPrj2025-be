@@ -18,8 +18,8 @@ const DonKham = sequelize.define('donKham', {
 
 DonKham.belongsTo(BenhNhan, { foreignKey: 'benhNhanId' });
 
-(async () => {
-  await DonKham.sync({ alter: true })
-})();
+// (async () => {
+//   await DonKham.sync({ alter: true })
+// })();
 
 module.exports = DonKham

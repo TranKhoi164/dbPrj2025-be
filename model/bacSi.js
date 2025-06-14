@@ -5,7 +5,7 @@ const BacSi = sequelize.define('bacSi', {
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
-    autoIncrement: true
+    autoIncrement: true 
   },
   namKinhNghiem: DataTypes.INTEGER,
   caTruc: DataTypes.STRING
@@ -14,10 +14,9 @@ const BacSi = sequelize.define('bacSi', {
   timestamps: false
 });
 
-BacSi.belongsTo(ThongTinCaNhan, { foreignKey: 'thongTinCaNhanId' });
 
-(async () => {
-  await BacSi.sync({ alter: true })
-})();
+// (async () => {
+//   await BacSi.sync({ alter: true })
+// })();
 
 module.exports = BacSi
