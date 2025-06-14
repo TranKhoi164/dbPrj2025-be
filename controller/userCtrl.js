@@ -1,7 +1,7 @@
 const handleExceptions = require('../utils/handleExceptions')
-const ThongTinCaNhan = require('../model/index')
-const BenhNhan = require('../model/index')
-const BacSi = require('../model/index')
+const {ThongTinCaNhan} = require('../model/index')
+const {BenhNhan} = require('../model/index')
+const {BacSi} = require('../model/index')
 
 const userRegister = async (req, res) => {
   try {
@@ -40,26 +40,38 @@ const userRegister = async (req, res) => {
       });
     }
 
+    const userWithDetails = await ThongTinCaNhan.findOne({
+      where: { id: newUser.id },
+      include: [{ model: BenhNhan, as: 'benhNhan' }, {model: BacSi, as: 'bacSi'}]
+    });
+
     res.json({
-      user: { ...newUser.dataValues },
+      user: { ...userWithDetails.dataValues },
       message: 'User register successfully!'
     })
   } catch (e) {
+    if (e.name == 'SequelizeUniqueConstraintError') {
+      handleExceptions(500, "User is already exist!", res)
+      return
+    }
     handleExceptions(500, e.message, res)
   }
 }
 
 const userLogin = async (req, res) => {
   try {
-    console.log(req.body.thongTinCaNhan);
-
-    const { ten, CCCD, ngaySinh, gioiTinh, sdt } = req.body.thongTinCaNhan
+    const {id} = req.body.user
     const user = await ThongTinCaNhan.findOne({
-      where: { id: id }
+      where: { id },
+      include: [{ model: BenhNhan, as: 'benhNhan' }, {model: BacSi, as: 'bacSi'}]
     });
+    if (!user) {
+      handleExceptions(500, "User is not exist!", res)
+      return
+    }
     res.json({
-      thongTinCaNhan: { ...user.dataValues },
-      message: 'Tao thanh cong!'
+      user: { ...user.dataValues },
+      message: 'User login successfully!'
     })
   } catch (e) {
     handleExceptions(500, e.message, res)
