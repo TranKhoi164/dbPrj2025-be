@@ -8,7 +8,8 @@ const LichKham = sequelize.define('lichKham', {
     primaryKey: true,
     autoIncrement: true
   },
-  thoiGian: DataTypes.DATE
+  ngay: DataTypes.DATE,
+  gio: DataTypes.STRING
 }, {
   timestamps: false
 });
