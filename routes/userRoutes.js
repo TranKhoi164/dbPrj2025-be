@@ -1,16 +1,16 @@
-const { userLogin, userRegister, } = require('../controller/userCtrl')
+const { userLogin, userRegister, getUser } = require('../controller/userCtrl')
 
 const router = require('express').Router()
 
 router.get('/', (req, res) => {
   res.json({msg: 'Hello user'})
 })
-router.get('/test', (req, res) => {
-  res.send('test user')
-})
-
+// thongTinCaNhan { role: 'bacSi', ten, CCCD, ngaySinh, gioiTinh, sdt, namKinhNghiem, caTruc }
+// thongTinCaNhan { role: 'benhNhan', ten, CCCD, ngaySinh, gioiTinh, sdt, diaChi }
 router.post('/register', userRegister)
+// thongTinCaNhan { CCCD }
 router.post('/login', userLogin)
+router.get('/:id', getUser)
 // router.get('/auth/logout', userLogout)
 
 

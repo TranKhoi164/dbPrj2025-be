@@ -23,4 +23,8 @@ const ThongTinCaNhan = sequelize.define('thongTinCaNhan', {
   timestamps: false
 });
 
+// (async () => {
+//   await ThongTinCaNhan.sync({ alter: true })
+// })();
+
 module.exports = ThongTinCaNhan

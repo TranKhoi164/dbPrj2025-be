@@ -7,11 +7,12 @@ const BacSi = sequelize.define('bacSi', {
     primaryKey: true,
     autoIncrement: true 
   },
+  thongTinCaNhanId: DataTypes.INTEGER,
   namKinhNghiem: DataTypes.INTEGER,
   caTruc: DataTypes.STRING
 }, {
-  // tableName: 'bacsis',
-  timestamps: false
+  tableName: 'bacsis',
+  timestamps: false,
 });
 
 

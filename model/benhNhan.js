@@ -7,6 +7,7 @@ const BenhNhan = sequelize.define('benhNhan', {
     primaryKey: true,
     autoIncrement: true
   },
+  thongTinCaNhanId: DataTypes.INTEGER,
   diaChi: DataTypes.STRING
 }, {
   tableName: 'benhnhans',

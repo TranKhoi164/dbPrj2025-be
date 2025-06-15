@@ -1,62 +1,93 @@
-const handleExceptions = require('../utils/handleExceptions')
-const BenhNhan = require('../model')
-const DonKham = require('../model')
+const handleExceptions = require("../utils/handleExceptions");
+const {DonKham} = require("../model");
+const {ThongTinCaNhan} = require('../model')
 // const BenhNhan = require('../model/benhNhan')
 // const BacSi = require('../model/bacSi')
 
 const createOrder = async (req, res) => {
-  try {
-    const { benhLy, mucDoBenh, dieuTri } = req.body.donKham
-    const newOrder = await DonKham.create({
-      benhLy: benhLy,
-      mucDoBenh: mucDoBenh,
-      dieuTri: dieuTri
+	try {
+		const { benhLy, mucDoBenh, dieuTri, benhNhanId, bacSiId } = req.body.donKham;
+
+    const benhNhan = await ThongTinCaNhan.findByPk(benhNhanId);
+    const bacSi = await ThongTinCaNhan.findByPk(bacSiId);
+
+    if (!benhNhan || !bacSi) {
+      return handleExceptions(500, 'Không tìm thấy bệnh nhân hoặc bác sĩ!', res);
+    }
+
+		const newOrder = await DonKham.create({
+      benhLy,
+      mucDoBenh,
+      dieuTri,
+      benhNhanId,
+      bacSiId
+    });
+    const findOrder = await DonKham.findOne({
+      where: {id: newOrder.id},
+      include: [
+				{ model: ThongTinCaNhan, as: "benhNhan" },
+				{ model: ThongTinCaNhan, as: "bacSi" },
+			],
     })
-    res.json({
-      donKham: { ...newOrder.dataValues },
-      message: 'Thanh cong'
-    })
-  } catch (e) {
-    handleExceptions(500, e.message, res)
-  }
-}
+		res.json({
+			donKham: { ...findOrder.dataValues },
+			message: "Thành công!",
+		});
+	} catch (e) {
+		handleExceptions(500, e.message, res);
+	}
+};
 
 const updateOrder = async (req, res) => {
-  try {
-    const { benhLy, mucDoBenh, dieuTri } = req.body.donKham
-    const newOrder = await DonKham.create({
-      benhLy: benhLy,
-      mucDoBenh: mucDoBenh,
-      dieuTri: dieuTri
+	try {
+		const { id, benhLy, mucDoBenh, dieuTri } = req.body.donKham;
+		const updateData = {};
+		if (benhLy != null) updateData.benhLy = benhLy;
+		if (mucDoBenh != null) updateData.mucDoBenh = mucDoBenh;
+		if (dieuTri != null) updateData.dieuTri = dieuTri;
+
+		await DonKham.update(updateData, {
+			where: { id: id },
+		});
+		 const updatedOrder = await DonKham.findOne({
+      where: {id: id},
+      include: [
+				{ model: ThongTinCaNhan, as: "benhNhan" },
+				{ model: ThongTinCaNhan, as: "bacSi" },
+			],
     })
-    res.json({
-      donKham: { ...newOrder.dataValues },
-      message: 'Thanh cong'
-    })
-  } catch (e) {
-    handleExceptions(500, e.message, res)
-  }
-}
+		if (!updatedOrder) {
+			return handleExceptions(500, 'Không tìm thấy đơn khám!', res);
+		}
+		res.json({
+			donKham: updatedOrder,
+			message: "Thành công",
+		});
+	} catch (e) {
+		handleExceptions(500, e.message, res);
+	}
+};
 
 const deleteOrder = async (req, res) => {
-  try {
-    const { benhLy, mucDoBenh, dieuTri } = req.body.donKham
-    const newOrder = await DonKham.create({
-      benhLy: benhLy,
-      mucDoBenh: mucDoBenh,
-      dieuTri: dieuTri
-    })
-    res.json({
-      donKham: { ...newOrder.dataValues },
-      message: 'Thanh cong'
-    })
-  } catch (e) {
-    handleExceptions(500, e.message, res)
-  }
-}
+	try {
+		const { id } = req.body.donKham;
+		const deletedCount = await DonKham.destroy({
+			where: { id: id },
+		});
+
+		if (deletedCount === 0) {
+			return res
+				.status(500)
+				.json({ message: "Không tìm thấy đơn khám!" });
+		}
+		res.json({ message: 'Thành công!' });
+	} catch (e) {
+		handleExceptions(500, e.message, res);
+	}
+};
 
 module.exports = {
-  createOrder: createOrder,
-  updateOrder: updateOrder,
-  deleteOrder: deleteOrder,
-}
+	createOrder: createOrder,
+	updateOrder: updateOrder,
+	deleteOrder: deleteOrder,
+};

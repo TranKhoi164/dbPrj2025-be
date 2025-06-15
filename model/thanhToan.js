@@ -14,6 +14,7 @@ const ThanhToan = sequelize.define('thanhToan', {
   hoanThanh: DataTypes.BOOLEAN,
   theBhyt: DataTypes.STRING
 }, {
+  tableName: 'thanhtoans',
   timestamps: false
 });
 

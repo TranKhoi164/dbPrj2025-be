@@ -11,7 +11,8 @@ const LichKham = sequelize.define('lichKham', {
   ngay: DataTypes.DATE,
   gio: DataTypes.STRING
 }, {
-  timestamps: false
+  tableName: 'lichkhams',
+  timestamps: false,
 });
 
 // (async () => {
