@@ -4,7 +4,7 @@ const {ThongTinCaNhan} = require('../model')
 // const BenhNhan = require('../model/benhNhan')
 // const BacSi = require('../model/bacSi')
 
-const createOrder = async (req, res) => {
+const createExamination = async (req, res) => {
 	try {
 		const { benhLy, mucDoBenh, dieuTri, benhNhanId, bacSiId } = req.body.donKham;
 
@@ -38,7 +38,7 @@ const createOrder = async (req, res) => {
 	}
 };
 
-const updateOrder = async (req, res) => {
+const updateExamination = async (req, res) => {
 	try {
 		const { id, benhLy, mucDoBenh, dieuTri } = req.body.donKham;
 		const updateData = {};
@@ -68,26 +68,7 @@ const updateOrder = async (req, res) => {
 	}
 };
 
-const deleteOrder = async (req, res) => {
-	try {
-		const { id } = req.body.donKham;
-		const deletedCount = await DonKham.destroy({
-			where: { id: id },
-		});
-
-		if (deletedCount === 0) {
-			return res
-				.status(500)
-				.json({ message: "Không tìm thấy đơn khám!" });
-		}
-		res.json({ message: 'Thành công!' });
-	} catch (e) {
-		handleExceptions(500, e.message, res);
-	}
-};
-
 module.exports = {
-	createOrder: createOrder,
-	updateOrder: updateOrder,
-	deleteOrder: deleteOrder,
+	createExamination: createExamination,
+	updateExamination: updateExamination,
 };

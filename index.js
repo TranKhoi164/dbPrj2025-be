@@ -14,7 +14,7 @@ app.get('/', (req, res) => {
 
 app.use(express.json())
 app.use('/user', userRoutes)
-app.use('/order', orderRoutes)
+app.use('/examination', orderRoutes)
 
 app.listen(BE_PORT, () => {
   console.log('Server running on http://localhost:' + BE_PORT);
