@@ -8,11 +8,13 @@ const LichKham = sequelize.define('lichKham', {
     primaryKey: true,
     autoIncrement: true
   },
+  benhNhanId: DataTypes.INTEGER,
+  bacSiId: DataTypes.INTEGER,
   ngay: DataTypes.DATE,
   gio: DataTypes.STRING
 }, {
   tableName: 'lichkhams',
-  timestamps: false,
+  timestamps: true,
 });
 
 // (async () => {

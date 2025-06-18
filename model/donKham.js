@@ -29,12 +29,13 @@ const DonKham = sequelize.define(
 			onUpdate: "CASCADE",
 			onDelete: "CASCADE",
 		},
+		lichKhamId: DataTypes.INTEGER,
 		benhLy: DataTypes.STRING,
 		mucDoBenh: DataTypes.STRING,
 		dieuTri: DataTypes.STRING,
 	},
 	{
-		timestamps: false,
+		timestamps: true,
 		tableName: "donkhams",
 	}
 );
