@@ -77,4 +77,5 @@ module.exports = {
 	BacSi,
 	BenhNhan,
 	DonKham,
+	LichKham,
 };

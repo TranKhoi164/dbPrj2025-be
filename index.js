@@ -6,7 +6,8 @@ require('./databaseConnection')
 const {BE_PORT} = process.env || 5000
 
 const userRoutes = require('./routes/userRoutes')
-const orderRoutes = require('./routes/orderRoutes')
+const examinationRoutes = require('./routes/examinationRoutes')
+const appointmentRoutes = require('./routes/appointmentRoutes')
 
 app.get('/', (req, res) => {
   res.send('Hello world')
@@ -14,7 +15,8 @@ app.get('/', (req, res) => {
 
 app.use(express.json())
 app.use('/user', userRoutes)
-app.use('/examination', orderRoutes)
+app.use('/examination', examinationRoutes)
+app.use('/appointment', appointmentRoutes)
 
 app.listen(BE_PORT, () => {
   console.log('Server running on http://localhost:' + BE_PORT);

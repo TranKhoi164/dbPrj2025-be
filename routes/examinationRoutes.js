@@ -1,4 +1,4 @@
-const { createExamination, updateExamination } = require('../controller/orderCtrl')
+const { createExamination, updateExamination } = require('../controller/examinationCtrl')
 
 const router = require('express').Router()
 
