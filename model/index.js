@@ -78,4 +78,5 @@ module.exports = {
 	BenhNhan,
 	DonKham,
 	LichKham,
+	ThanhToan,
 };

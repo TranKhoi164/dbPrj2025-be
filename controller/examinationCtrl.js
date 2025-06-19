@@ -12,7 +12,7 @@ const createExamination = async (req, res) => {
 
 		const benhNhan = await ThongTinCaNhan.findByPk(benhNhanId);
 		const bacSi = await ThongTinCaNhan.findByPk(bacSiId);
-		const lichKham = await LichKham.findByPk(bacSiId);
+		const lichKham = await LichKham.findByPk(lichKhamId);
 
 		if (!benhNhan || !bacSi) {
 			return handleExceptions(500, 'Không tìm thấy bệnh nhân hoặc bác sĩ!', res);
@@ -21,7 +21,7 @@ const createExamination = async (req, res) => {
 			return handleExceptions(500, 'Không tìm thấy lịch khám', res);
 		}
 
-		const newOrder = await DonKham.create({
+		const newExamination = await DonKham.create({
 			benhLy,
 			mucDoBenh,
 			dieuTri,
@@ -29,15 +29,15 @@ const createExamination = async (req, res) => {
 			benhNhanId,
 			bacSiId
 		});
-		const findOrder = await DonKham.findOne({
-			where: { id: newOrder.id },
+		const findExamination = await DonKham.findOne({
+			where: { id: newExamination.id },
 			include: [
 				{ model: ThongTinCaNhan, as: "benhNhan" },
 				{ model: ThongTinCaNhan, as: "bacSi" },
 			],
 		})
 		res.json({
-			donKham: { ...findOrder.dataValues },
+			donKham: { ...findExamination.dataValues },
 			message: "Thành công!",
 		});
 	} catch (e) {
@@ -56,18 +56,18 @@ const updateExamination = async (req, res) => {
 		await DonKham.update(updateData, {
 			where: { id: id },
 		});
-		const updatedOrder = await DonKham.findOne({
+		const updatedExamination = await DonKham.findOne({
 			where: { id: id },
 			include: [
 				{ model: ThongTinCaNhan, as: "benhNhan" },
 				{ model: ThongTinCaNhan, as: "bacSi" },
 			],
 		})
-		if (!updatedOrder) {
+		if (!updatedExamination) {
 			return handleExceptions(500, 'Không tìm thấy đơn khám!', res);
 		}
 		res.json({
-			donKham: updatedOrder,
+			donKham: { ...updatedExamination.dataValues },
 			message: "Thành công",
 		});
 	} catch (e) {
