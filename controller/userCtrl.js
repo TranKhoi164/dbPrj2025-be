@@ -118,6 +118,27 @@ const getUser = async (req, res) => {
 	}
 };
 
+const getDoctors = async (req, res) => {
+	try {
+		const doctors = await ThongTinCaNhan.findAll({
+			include: [
+				{
+					model: BacSi,
+					as: "bacSi",
+					required: true, // only include if bacSi exists
+				},
+			],
+		});
+
+		res.json({
+			cacBacSi: {...doctors},
+			message: "Thành công!",
+		});
+	} catch (e) {
+		handleExceptions(500, e.message, res);
+	}
+}
+
 const userLogout = async (req, res) => {};
 
 module.exports = {
@@ -125,4 +146,5 @@ module.exports = {
 	userLogin: userLogin,
 	userLogout: userLogout,
 	getUser: getUser,
+	getDoctors: getDoctors,
 };
