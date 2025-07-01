@@ -131,7 +131,7 @@ const getDoctors = async (req, res) => {
 		});
 
 		res.json({
-			cacBacSi: {...doctors},
+			doctors: doctors,
 			message: "Thành công!",
 		});
 	} catch (e) {

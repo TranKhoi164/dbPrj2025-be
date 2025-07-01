@@ -52,7 +52,7 @@ ThongTinCaNhan.hasMany(LichKham, { foreignKey: 'benhNhanId', as: 'lichKhamBenhNh
 LichKham.belongsTo(ThongTinCaNhan, { foreignKey: 'bacSiId', as: 'bacSi' });
 LichKham.belongsTo(ThongTinCaNhan, { foreignKey: 'benhNhanId', as: 'benhNhan' });
 
-ThongTinCaNhan.hasMany(DonKham, { foreignKey: 'bacSiId', as: 'thanhToan' });
+ThongTinCaNhan.hasMany(ThanhToan, { foreignKey: 'benhNhanId', as: 'thanhToan' });
 ThanhToan.belongsTo(ThongTinCaNhan, {
 	foreignKey: "benhNhanId",
 	as: "benhNhan",

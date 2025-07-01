@@ -11,7 +11,11 @@ const LichKham = sequelize.define('lichKham', {
   benhNhanId: DataTypes.INTEGER,
   bacSiId: DataTypes.INTEGER,
   ngay: DataTypes.DATE,
-  gio: DataTypes.STRING
+  gio: DataTypes.STRING,
+  trangThai: {
+    type: DataTypes.ENUM('cho', 'hoanThanh', 'huy', 'ban'),
+    defaultValue: 'cho'
+  }
 }, {
   tableName: 'lichkhams',
   timestamps: true,
