@@ -4,7 +4,8 @@ const {
   getDoctorSchedule, 
   markAsBusy, 
   getAppointmentDetails, 
-  completeAppointment 
+  completeAppointment, 
+  getPatientSchedule
 } = require('../controller/appointmentCtrl')
 
 const router = require('express').Router()
@@ -21,5 +22,7 @@ router.post('/mark-busy', markAsBusy)
 router.get('/details/:id', getAppointmentDetails)
 // Complete appointment: lichKham: { id }
 router.patch('/complete', completeAppointment)
+
+router.get('/patient-schedule/:benhNhanId', getPatientSchedule)
 
 module.exports = router

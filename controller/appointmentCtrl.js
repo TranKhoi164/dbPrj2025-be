@@ -39,6 +39,24 @@ const createAppointment = async (req, res) => {
 	}
 };
 
+const getPatientSchedule = async (req, res) => {
+	try {
+		const schedules = await lichKham.findAll({
+			where: { benhNhanId: req.params.benhNhanId },
+			include: [
+				{ model: ThongTinCaNhan, as: "benhNhan" },
+				{ model: ThongTinCaNhan, as: "bacSi" },
+			],
+		})
+		res.json({
+			schedules,
+			message: 'Thanh cong!'
+		})
+	} catch (e) {
+		handleExceptions(500, e.message, res)
+	}
+}
+
 const deleteAppointment = async (req, res) => {
 	try {
 		const { id } = req.body.lichKham;
@@ -200,5 +218,6 @@ module.exports = {
   getDoctorSchedule,
   markAsBusy,
   getAppointmentDetails,
-  completeAppointment
+  completeAppointment,
+	getPatientSchedule
 };
