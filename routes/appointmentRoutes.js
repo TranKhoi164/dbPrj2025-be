@@ -3,9 +3,9 @@ const {
   deleteAppointment, 
   getDoctorSchedule, 
   markAsBusy, 
-  getAppointmentDetails, 
-  completeAppointment, 
-  getPatientSchedule
+  getPatientSchedule,
+  getAppointmentDetails,
+  completeAppointment
 } = require('../controller/appointmentCtrl')
 
 const router = require('express').Router()
@@ -18,11 +18,11 @@ router.patch('/delete', deleteAppointment)
 router.get('/doctor-schedule/:bacSiId', getDoctorSchedule)
 // Mark time slot as busy: lichKham: { ngay, gio, bacSiId }
 router.post('/mark-busy', markAsBusy)
+// Get patient schedule: benhNhanId
+router.get('/patient-schedule/:benhNhanId', getPatientSchedule)
 // Get appointment details: id
 router.get('/details/:id', getAppointmentDetails)
 // Complete appointment: lichKham: { id }
 router.patch('/complete', completeAppointment)
-
-router.get('/patient-schedule/:benhNhanId', getPatientSchedule)
 
 module.exports = router
