@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trang Bác Sĩ</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .appointment-card {
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .appointment-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    .busy-slot {
+      background-color: #f8d7da;
+    }
+    .completed-slot {
+      background-color: #d1e7dd;
+    }
+    .waiting-slot {
+      background-color: #fff3cd;
+    }
+    .cancelled-slot {
+      background-color: #e2e3e5;
+      text-decoration: line-through;
+    }
+  </style>
+</head>
+<body>
+<div class="container mt-5">
+  <h1 class="mb-4">Trang Quản Lý Lịch Khám Bác Sĩ</h1>
+
+  <!-- Doctor Selection -->
+  <div class="row mb-4">
+    <div class="col-md-6">
+      <div class="input-group">
+        <span class="input-group-text">Chọn Bác Sĩ</span>
+        <select id="doctorSelect" class="form-select">
+          <!-- Will be populated with doctors -->
+        </select>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="input-group">
+        <span class="input-group-text">Chọn Ngày</span>
+        <input type="date" id="dateSelect" class="form-control">
+        <button id="loadScheduleBtn" class="btn btn-primary">Xem Lịch</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mark as Busy Form -->
+  <div class="card mb-4">
+    <div class="card-header bg-primary text-white">
+      Đánh Dấu Thời Gian Bận
+    </div>
+    <div class="card-body">
+      <form id="busyForm">
+        <div class="row">
+          <div class="col-md-4">
+            <div class="mb-3">
+              <label for="busyDate" class="form-label">Ngày</label>
+              <input type="date" class="form-control" id="busyDate" required>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="mb-3">
+              <label for="busyTime" class="form-label">Giờ</label>
+              <select class="form-select" id="busyTime" required>
+                <option value="08:00">08:00</option>
+                <option value="09:00">09:00</option>
+                <option value="10:00">10:00</option>
+                <option value="11:00">11:00</option>
+                <option value="13:00">13:00</option>
+                <option value="14:00">14:00</option>
+                <option value="15:00">15:00</option>
+                <option value="16:00">16:00</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="mb-3">
+              <label class="form-label">&nbsp;</label>
+              <button type="submit" class="btn btn-danger form-control">Đánh Dấu Bận</button>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Schedule Display -->
+  <div class="card">
+    <div class="card-header bg-info text-white">
+      Lịch Khám
+    </div>
+    <div class="card-body">
+      <div id="scheduleContainer" class="row g-4">
+        <!-- Will be populated with appointments -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Appointment Details Modal -->
+<div class="modal fade" id="appointmentModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Chi Tiết Lịch Khám</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div id="appointmentDetails">
+          <!-- Will be populated with appointment details -->
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+        <button type="button" id="completeBtn" class="btn btn-success">Xác Nhận Hoàn Thành</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  // API Base URL - Change this to your backend URL
+  const API_BASE_URL = 'http://localhost:5000';
+
+  // DOM Elements
+  const doctorSelect = document.getElementById('doctorSelect');
+  const dateSelect = document.getElementById('dateSelect');
+  const loadScheduleBtn = document.getElementById('loadScheduleBtn');
+  const scheduleContainer = document.getElementById('scheduleContainer');
+  const busyForm = document.getElementById('busyForm');
+  const busyDate = document.getElementById('busyDate');
+  const busyTime = document.getElementById('busyTime');
+  const appointmentModal = new bootstrap.Modal(document.getElementById('appointmentModal'));
+  const appointmentDetails = document.getElementById('appointmentDetails');
+  const completeBtn = document.getElementById('completeBtn');
+
+  // Set default date to today
+  dateSelect.valueAsDate = new Date();
+  busyDate.valueAsDate = new Date();
+
+  // Current appointment ID for modal
+  let currentAppointmentId = null;
+
+  // Load doctors on page load
+  document.addEventListener('DOMContentLoaded', async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/user/doctors`);
+      if (!response.ok) throw new Error('Failed to load doctors');
+
+      const data = await response.json();
+
+      // Populate doctor select
+      doctorSelect.innerHTML = '';
+      data.doctors.forEach(doctor => {
+        const option = document.createElement('option');
+        option.value = doctor.id;
+        option.textContent = doctor.ten;
+        doctorSelect.appendChild(option);
+      });
+
+      // Load schedule for first doctor
+      if (data.doctors.length > 0) {
+        loadSchedule();
+      }
+    } catch (error) {
+      console.error('Error loading doctors:', error);
+      alert('Không thể tải danh sách bác sĩ. Vui lòng thử lại sau.');
+    }
+  });
+
+  // Load schedule button click
+  loadScheduleBtn.addEventListener('click', loadSchedule);
+
+  // Load schedule function
+  async function loadSchedule() {
+    const doctorId = doctorSelect.value;
+    const date = dateSelect.value;
+
+    if (!doctorId) {
+      alert('Vui lòng chọn bác sĩ');
+      return;
+    }
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/appointment/doctor-schedule/${doctorId}?ngayBatDau=${date}`);
+      if (!response.ok) throw new Error('Failed to load schedule');
+
+      const data = await response.json();
+
+      // Display schedule
+      scheduleContainer.innerHTML = '';
+
+      if (data.schedule.length === 0) {
+        scheduleContainer.innerHTML = '<div class="col-12"><div class="alert alert-info">Không có lịch khám nào trong ngày này.</div></div>';
+        return;
+      }
+
+      data.schedule.forEach(appointment => {
+        const appointmentDate = new Date(appointment.ngay);
+        const formattedDate = appointmentDate.toLocaleDateString('vi-VN');
+
+        let statusClass = '';
+        let statusText = '';
+
+        switch(appointment.trangThai) {
+          case 'cho':
+            statusClass = 'waiting-slot';
+            statusText = 'Đang chờ';
+            break;
+          case 'hoanThanh':
+            statusClass = 'completed-slot';
+            statusText = 'Hoàn thành';
+            break;
+          case 'huy':
+            statusClass = 'cancelled-slot';
+            statusText = 'Đã hủy';
+            break;
+          case 'ban':
+            statusClass = 'busy-slot';
+            statusText = 'Bận';
+            break;
+        }
+
+        const appointmentCard = document.createElement('div');
+        appointmentCard.className = `col-md-4`;
+        appointmentCard.innerHTML = `
+                        <div class="card appointment-card ${statusClass}">
+                            <div class="card-body">
+                                <h5 class="card-title">${appointment.gio}</h5>
+                                <h6 class="card-subtitle mb-2 text-muted">${formattedDate}</h6>
+                                <p class="card-text">
+                                    <strong>Trạng thái:</strong> ${statusText}<br>
+                                    ${appointment.benhNhan ? `<strong>Bệnh nhân:</strong> ${appointment.benhNhan.ten}<br>` : ''}
+                                </p>
+                                ${appointment.trangThai !== 'ban' ? `<button class="btn btn-sm btn-primary view-details" data-id="${appointment.id}">Xem chi tiết</button>` : ''}
+                            </div>
+                        </div>
+                    `;
+
+        scheduleContainer.appendChild(appointmentCard);
+
+        // Add event listener to view details button
+        const viewDetailsBtn = appointmentCard.querySelector('.view-details');
+        if (viewDetailsBtn) {
+          viewDetailsBtn.addEventListener('click', () => viewAppointmentDetails(appointment.id));
+        }
+      });
+
+    } catch (error) {
+      console.error('Error loading schedule:', error);
+      alert('Không thể tải lịch khám. Vui lòng thử lại sau.');
+    }
+  }
+
+  // Mark as busy form submit
+  busyForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const doctorId = doctorSelect.value;
+    const date = busyDate.value;
+    const time = busyTime.value;
+
+    if (!doctorId) {
+      alert('Vui lòng chọn bác sĩ');
+      return;
+    }
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/appointment/mark-busy`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          lichKham: {
+            ngay: date,
+            gio: time,
+            bacSiId: doctorId
+          }
+        })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to mark as busy');
+      }
+
+      alert('Đã đánh dấu thời gian bận thành công!');
+      loadSchedule(); // Reload schedule
+
+    } catch (error) {
+      console.error('Error marking as busy:', error);
+      alert(error.message || 'Không thể đánh dấu thời gian bận. Vui lòng thử lại sau.');
+    }
+  });
+
+  // View appointment details
+  async function viewAppointmentDetails(appointmentId) {
+    try {
+      const response = await fetch(`${API_BASE_URL}/appointment/details/${appointmentId}`);
+      if (!response.ok) throw new Error('Failed to load appointment details');
+
+      const data = await response.json();
+      const appointment = data.appointment;
+
+      // Store current appointment ID for complete button
+      currentAppointmentId = appointmentId;
+
+      // Format date
+      const appointmentDate = new Date(appointment.ngay);
+      const formattedDate = appointmentDate.toLocaleDateString('vi-VN');
+
+      // Check if payment is completed
+      const paymentCompleted = appointment.thanhToan && appointment.thanhToan.hoanThanh;
+
+      // Enable/disable complete button based on payment status and appointment status
+      completeBtn.disabled = !paymentCompleted || appointment.trangThai === 'hoanThanh';
+
+      // Build details HTML
+      let detailsHtml = `
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <h5>Thông tin lịch khám</h5>
+                            <p><strong>Ngày:</strong> ${formattedDate}</p>
+                            <p><strong>Giờ:</strong> ${appointment.gio}</p>
+                            <p><strong>Trạng thái:</strong> ${getStatusText(appointment.trangThai)}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Thông tin bệnh nhân</h5>
+                            <p><strong>Tên:</strong> ${appointment.benhNhan.ten}</p>
+                            <p><strong>Ngày sinh:</strong> ${new Date(appointment.benhNhan.ngaySinh).toLocaleDateString('vi-VN')}</p>
+                            <p><strong>Giới tính:</strong> ${appointment.benhNhan.gioiTinh}</p>
+                            <p><strong>SĐT:</strong> ${appointment.benhNhan.sdt}</p>
+                        </div>
+                    </div>
+                `;
+
+      // Add examination form details if exists
+      if (appointment.donKham) {
+        detailsHtml += `
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <h5>Đơn khám</h5>
+                                <p><strong>Bệnh lý:</strong> ${appointment.donKham.benhLy || 'Chưa có'}</p>
+                                <p><strong>Mức độ bệnh:</strong> ${appointment.donKham.mucDoBenh || 'Chưa có'}</p>
+                                <p><strong>Điều trị:</strong> ${appointment.donKham.dieuTri || 'Chưa có'}</p>
+                            </div>
+                        </div>
+                    `;
+      }
+
+      // Add payment details if exists
+      if (appointment.thanhToan) {
+        detailsHtml += `
+                        <div class="row">
+                            <div class="col-12">
+                                <h5>Thanh toán</h5>
+                                <p><strong>Chi phí:</strong> ${appointment.thanhToan.chiPhi.toLocaleString('vi-VN')} VNĐ</p>
+                                <p><strong>Phương thức thanh toán:</strong> ${appointment.thanhToan.phuongThucThanhToan || 'Chưa có'}</p>
+                                <p><strong>Trạng thái thanh toán:</strong> ${appointment.thanhToan.hoanThanh ? 'Đã thanh toán' : 'Chưa thanh toán'}</p>
+                                <p><strong>Thẻ BHYT:</strong> ${appointment.thanhToan.theBhyt || 'Không có'}</p>
+                            </div>
+                        </div>
+                    `;
+      }
+
+      // Set details HTML
+      appointmentDetails.innerHTML = detailsHtml;
+
+      // Show modal
+      appointmentModal.show();
+
+    } catch (error) {
+      console.error('Error loading appointment details:', error);
+      alert('Không thể tải chi tiết lịch khám. Vui lòng thử lại sau.');
+    }
+  }
+
+  // Complete appointment button click
+  completeBtn.addEventListener('click', async () => {
+    if (!currentAppointmentId) return;
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/appointment/complete`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          lichKham: {
+            id: currentAppointmentId
+          }
+        })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to complete appointment');
+      }
+
+      alert('Đã hoàn thành lịch khám!');
+      appointmentModal.hide();
+      loadSchedule(); // Reload schedule
+
+    } catch (error) {
+      console.error('Error completing appointment:', error);
+      alert(error.message || 'Không thể hoàn thành lịch khám. Vui lòng thử lại sau.');
+    }
+  });
+
+  // Helper function to get status text
+  function getStatusText(status) {
+    switch(status) {
+      case 'cho': return 'Đang chờ';
+      case 'hoanThanh': return 'Hoàn thành';
+      case 'huy': return 'Đã hủy';
+      case 'ban': return 'Bận';
+      default: return status;
+    }
+  }
+</script>
+</body>
+</html>

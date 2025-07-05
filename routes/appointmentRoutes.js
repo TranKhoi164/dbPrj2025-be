@@ -3,27 +3,14 @@ const {
   deleteAppointment, 
   getDoctorSchedule, 
   markAsBusy, 
-  getPatientSchedule,
-  getAppointmentDetails,
-  completeAppointment
+  getAppointmentDetails, 
+  completeAppointment, 
+  getPatientSchedule
 } = require('../controller/appointmentCtrl')
 
 const router = require('express').Router()
 
-// Add GET route for appointments list (for frontend)
-router.get('/', async (req, res) => {
-  try {
-    // Mock data for now - you should implement actual logic
-    res.json({
-      lichKhams: [],
-      message: "Thành công!"
-    })
-  } catch (error) {
-    res.status(500).json({ message: error.message })
-  }
-})
-
-// lichKham: { ngay, gio, benhNhanId, bacSiId }
+// lichKham: { ngay, gio, benhNhanId, bacSiId } 
 router.post('/create', createAppointment)
 // lichKham: { id } 
 router.patch('/delete', deleteAppointment)
@@ -31,11 +18,11 @@ router.patch('/delete', deleteAppointment)
 router.get('/doctor-schedule/:bacSiId', getDoctorSchedule)
 // Mark time slot as busy: lichKham: { ngay, gio, bacSiId }
 router.post('/mark-busy', markAsBusy)
-// Get patient schedule: benhNhanId
-router.get('/patient-schedule/:benhNhanId', getPatientSchedule)
 // Get appointment details: id
 router.get('/details/:id', getAppointmentDetails)
 // Complete appointment: lichKham: { id }
 router.patch('/complete', completeAppointment)
+
+router.get('/patient-schedule/:benhNhanId', getPatientSchedule)
 
 module.exports = router
