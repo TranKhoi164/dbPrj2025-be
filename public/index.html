@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ thống Quản lý Bệnh viện</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div id="app">
+        <!-- Header -->
+        <header class="header">
+            <div class="container">
+                <div class="logo">
+                    <i class="fas fa-hospital"></i>
+                    <h1>Hệ thống Quản lý Bệnh viện</h1>
+                </div>
+                <nav class="nav">
+                    <button class="nav-btn active" data-section="dashboard">
+                        <i class="fas fa-dashboard"></i> Tổng quan
+                    </button>
+                    <button class="nav-btn" data-section="patients">
+                        <i class="fas fa-users"></i> Bệnh nhân
+                    </button>
+                    <button class="nav-btn" data-section="appointments">
+                        <i class="fas fa-calendar-alt"></i> Lịch khám
+                    </button>
+                    <button class="nav-btn" data-section="payments">
+                        <i class="fas fa-credit-card"></i> Thanh toán
+                    </button>
+                    <button class="nav-btn" data-section="examinations">
+                        <i class="fas fa-stethoscope"></i> Khám bệnh
+                    </button>
+                </nav>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main">
+            <div class="container">
+                <!-- Dashboard Section -->
+                <section id="dashboard" class="section active">
+                    <div class="dashboard-header">
+                        <h2>Tổng quan hệ thống</h2>
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <i class="fas fa-users"></i>
+                                <div class="stat-info">
+                                    <h3 id="totalPatients">0</h3>
+                                    <p>Tổng bệnh nhân</p>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <i class="fas fa-calendar-check"></i>
+                                <div class="stat-info">
+                                    <h3 id="totalAppointments">0</h3>
+                                    <p>Lịch khám hôm nay</p>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <i class="fas fa-money-bill-wave"></i>
+                                <div class="stat-info">
+                                    <h3 id="totalRevenue">0đ</h3>
+                                    <p>Doanh thu hôm nay</p>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <i class="fas fa-check-circle"></i>
+                                <div class="stat-info">
+                                    <h3 id="completedExams">0</h3>
+                                    <p>Khám hoàn thành</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Patients Section -->
+                <section id="patients" class="section">
+                    <div class="section-header">
+                        <h2>Quản lý Bệnh nhân</h2>
+                        <button class="btn btn-primary" onclick="showPatientModal()">
+                            <i class="fas fa-plus"></i> Thêm bệnh nhân
+                        </button>
+                    </div>
+                    <div class="search-bar">
+                        <input type="text" id="patientSearch" placeholder="Tìm kiếm bệnh nhân...">
+                        <button class="btn btn-secondary" onclick="searchPatients()">
+                            <i class="fas fa-search"></i> Tìm kiếm
+                        </button>
+                    </div>
+                    <div class="table-container">
+                        <table id="patientsTable">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Họ tên</th>
+                                    <th>Ngày sinh</th>
+                                    <th>Giới tính</th>
+                                    <th>Số điện thoại</th>
+                                    <th>Địa chỉ</th>
+                                    <th>Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- Appointments Section -->
+                <section id="appointments" class="section">
+                    <div class="section-header">
+                        <h2>Quản lý Lịch khám</h2>
+                        <button class="btn btn-primary" onclick="showAppointmentModal()">
+                            <i class="fas fa-plus"></i> Đặt lịch khám
+                        </button>
+                    </div>
+                    <div class="filters">
+                        <input type="date" id="appointmentDate" onchange="filterAppointments()">
+                        <select id="statusFilter" onchange="filterAppointments()">
+                            <option value="">Tất cả trạng thái</option>
+                            <option value="pending">Chờ khám</option>
+                            <option value="completed">Hoàn thành</option>
+                            <option value="cancelled">Đã hủy</option>
+                        </select>
+                    </div>
+                    <div class="table-container">
+                        <table id="appointmentsTable">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Bệnh nhân</th>
+                                    <th>Bác sĩ</th>
+                                    <th>Ngày giờ</th>
+                                    <th>Trạng thái</th>
+                                    <th>Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- Payments Section -->
+                <section id="payments" class="section">
+                    <div class="section-header">
+                        <h2>Quản lý Thanh toán</h2>
+                        <button class="btn btn-primary" onclick="showPaymentModal()">
+                            <i class="fas fa-plus"></i> Tạo thanh toán
+                        </button>
+                    </div>
+                    <div class="table-container">
+                        <table id="paymentsTable">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Bệnh nhân</th>
+                                    <th>Chi phí</th>
+                                    <th>Phương thức</th>
+                                    <th>Thẻ BHYT</th>
+                                    <th>Trạng thái</th>
+                                    <th>Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- Examinations Section -->
+                <section id="examinations" class="section">
+                    <div class="section-header">
+                        <h2>Quản lý Khám bệnh</h2>
+                        <button class="btn btn-primary" onclick="showExaminationModal()">
+                            <i class="fas fa-plus"></i> Tạo đơn khám
+                        </button>
+                    </div>
+                    <div class="table-container">
+                        <table id="examinationsTable">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Bệnh nhân</th>
+                                    <th>Bác sĩ</th>
+                                    <th>Chẩn đoán</th>
+                                    <th>Đơn thuốc</th>
+                                    <th>Ngày khám</th>
+                                    <th>Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+        </main>
+
+        <!-- Modals -->
+        <!-- Patient Modal -->
+        <div id="patientModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Thêm/Sửa Bệnh nhân</h3>
+                    <span class="close" onclick="closeModal('patientModal')">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <form id="patientForm">
+                        <div class="form-group">
+                            <label for="patientName">Họ tên:</label>
+                            <input type="text" id="patientName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="patientDob">Ngày sinh:</label>
+                            <input type="date" id="patientDob" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="patientGender">Giới tính:</label>
+                            <select id="patientGender" required>
+                                <option value="">Chọn giới tính</option>
+                                <option value="Nam">Nam</option>
+                                <option value="Nữ">Nữ</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="patientPhone">Số điện thoại:</label>
+                            <input type="tel" id="patientPhone" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="patientAddress">Địa chỉ:</label>
+                            <textarea id="patientAddress" rows="3" required></textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-secondary" onclick="closeModal('patientModal')">Hủy</button>
+                            <button type="submit" class="btn btn-primary">Lưu</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Appointment Modal -->
+        <div id="appointmentModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Đặt lịch khám</h3>
+                    <span class="close" onclick="closeModal('appointmentModal')">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <form id="appointmentForm">
+                        <div class="form-group">
+                            <label for="appointmentPatient">Bệnh nhân:</label>
+                            <select id="appointmentPatient" required>
+                                <option value="">Chọn bệnh nhân</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="appointmentDoctor">Bác sĩ:</label>
+                            <select id="appointmentDoctor" required>
+                                <option value="">Chọn bác sĩ</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="appointmentDate">Ngày khám:</label>
+                            <input type="date" id="appointmentDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="appointmentTime">Giờ khám:</label>
+                            <input type="time" id="appointmentTime" required>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-secondary" onclick="closeModal('appointmentModal')">Hủy</button>
+                            <button type="submit" class="btn btn-primary">Đặt lịch</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payment Modal -->
+        <div id="paymentModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Tạo thanh toán</h3>
+                    <span class="close" onclick="closeModal('paymentModal')">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <form id="paymentForm">
+                        <div class="form-group">
+                            <label for="paymentAppointment">Lịch khám:</label>
+                            <select id="paymentAppointment" required>
+                                <option value="">Chọn lịch khám</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="paymentAmount">Chi phí:</label>
+                            <input type="number" id="paymentAmount" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="paymentMethod">Phương thức thanh toán:</label>
+                            <select id="paymentMethod" required>
+                                <option value="">Chọn phương thức</option>
+                                <option value="Tiền mặt">Tiền mặt</option>
+                                <option value="Chuyển khoản">Chuyển khoản</option>
+                                <option value="Thẻ">Thẻ</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="paymentBhyt">Thẻ BHYT:</label>
+                            <input type="text" id="paymentBhyt" placeholder="Số thẻ BHYT (nếu có)">
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-secondary" onclick="closeModal('paymentModal')">Hủy</button>
+                            <button type="submit" class="btn btn-primary">Tạo thanh toán</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Examination Modal -->
+        <div id="examinationModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Tạo đơn khám</h3>
+                    <span class="close" onclick="closeModal('examinationModal')">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <form id="examinationForm">
+                        <div class="form-group">
+                            <label for="examinationAppointment">Lịch khám:</label>
+                            <select id="examinationAppointment" required>
+                                <option value="">Chọn lịch khám</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="examinationDiagnosis">Chẩn đoán:</label>
+                            <textarea id="examinationDiagnosis" rows="3" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="examinationPrescription">Đơn thuốc:</label>
+                            <textarea id="examinationPrescription" rows="3" required></textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-secondary" onclick="closeModal('examinationModal')">Hủy</button>
+                            <button type="submit" class="btn btn-primary">Tạo đơn khám</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading Overlay -->
+        <div id="loadingOverlay" class="loading-overlay">
+            <div class="loading-spinner">
+                <i class="fas fa-spinner fa-spin"></i>
+                <p>Đang tải...</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
