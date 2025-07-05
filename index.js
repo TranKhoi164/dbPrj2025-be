@@ -12,8 +12,17 @@ const examinationRoutes = require('./routes/examinationRoutes')
 const appointmentRoutes = require('./routes/appointmentRoutes')
 const paymentRoutes = require('./routes/paymentRoutes')
 
-// Enable CORS for all routes
-app.use(cors())
+// Configure CORS with specific options
+const corsOptions = {
+  origin: ['http://localhost:3000', 'http://localhost:5000', 'http://127.0.0.1:5000'],
+  credentials: true,
+  optionsSuccessStatus: 200,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Accept']
+}
+
+// Enable CORS with specific options
+app.use(cors(corsOptions))
 
 // Serve static files from public directory
 app.use(express.static(path.join(__dirname, 'public')))
