@@ -60,7 +60,17 @@ const getDoctors = async (req, res) => {
 	}
 }
 
-const userLogout = async (req, res) => {};
+const userLogout = async (req, res) => {
+	try {
+		// In a stateless JWT system, logout is typically handled on the client side
+		// by removing the token from storage
+		res.json({
+			message: "Đăng xuất thành công!",
+		});
+	} catch (e) {
+		handleExceptions(500, e.message, res);
+	}
+};
 
 module.exports = {
 	userRegister: userRegister,
