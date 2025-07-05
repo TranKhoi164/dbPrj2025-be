@@ -1,4 +1,7 @@
 const { sequelize } = require("../databaseConnection");
+const BenhNhan = require('../model/benhNhan');
+const ThongTinCaNhan = require('../model/thongTinCaNhan');
+const BacSi = require('../model/bacSi');
 
 class UserRepository {
     async createUser(userData, includes = []) {
@@ -153,6 +156,131 @@ class UserRepository {
                 }
             }
         }));
+    }
+
+    // Patient repository functions
+    async getAllPatients() {
+        try {
+            const patients = await BenhNhan.findAll({
+                include: [{
+                    model: ThongTinCaNhan,
+                    as: 'thongTinCaNhan'
+                }]
+            });
+            return patients;
+        } catch (error) {
+            throw new Error('Error fetching patients: ' + error.message);
+        }
+    }
+
+    async getPatientById(id) {
+        try {
+            const patient = await BenhNhan.findByPk(id, {
+                include: [{
+                    model: ThongTinCaNhan,
+                    as: 'thongTinCaNhan'
+                }]
+            });
+            return patient;
+        } catch (error) {
+            throw new Error('Error fetching patient: ' + error.message);
+        }
+    }
+
+    async createPatient(patientData) {
+        try {
+            // First create ThongTinCaNhan
+            const thongTinCaNhan = await ThongTinCaNhan.create(patientData.thongTinCaNhan);
+
+            // Then create BenhNhan with reference to ThongTinCaNhan
+            const patient = await BenhNhan.create({
+                thongTinCaNhanId: thongTinCaNhan.id,
+                diaChi: patientData.diaChi
+            });
+
+            return await this.getPatientById(patient.id);
+        } catch (error) {
+            throw new Error('Error creating patient: ' + error.message);
+        }
+    }
+
+    async updatePatient(id, patientData) {
+        try {
+            const patient = await BenhNhan.findByPk(id);
+            if (!patient) {
+                throw new Error('Patient not found');
+            }
+
+            // Update ThongTinCaNhan
+            if (patientData.thongTinCaNhan) {
+                await ThongTinCaNhan.update(patientData.thongTinCaNhan, {
+                    where: { id: patient.thongTinCaNhanId }
+                });
+            }
+
+            // Update BenhNhan
+            await BenhNhan.update({
+                diaChi: patientData.diaChi
+            }, {
+                where: { id: id }
+            });
+
+            return await this.getPatientById(id);
+        } catch (error) {
+            throw new Error('Error updating patient: ' + error.message);
+        }
+    }
+
+    async deletePatient(id) {
+        try {
+            const patient = await BenhNhan.findByPk(id);
+            if (!patient) {
+                throw new Error('Patient not found');
+            }
+
+            // Delete ThongTinCaNhan first
+            await ThongTinCaNhan.destroy({
+                where: { id: patient.thongTinCaNhanId }
+            });
+
+            // Delete BenhNhan
+            await BenhNhan.destroy({
+                where: { id: id }
+            });
+
+            return true;
+        } catch (error) {
+            throw new Error('Error deleting patient: ' + error.message);
+        }
+    }
+
+    // Doctor repository functions
+    async getAllDoctors() {
+        try {
+            const doctors = await BacSi.findAll({
+                include: [{
+                    model: ThongTinCaNhan,
+                    as: 'thongTinCaNhan'
+                }]
+            });
+            return doctors;
+        } catch (error) {
+            throw new Error('Error fetching doctors: ' + error.message);
+        }
+    }
+
+    async getDoctorById(id) {
+        try {
+            const doctor = await BacSi.findByPk(id, {
+                include: [{
+                    model: ThongTinCaNhan,
+                    as: 'thongTinCaNhan'
+                }]
+            });
+            return doctor;
+        } catch (error) {
+            throw new Error('Error fetching doctor: ' + error.message);
+        }
     }
 }
 

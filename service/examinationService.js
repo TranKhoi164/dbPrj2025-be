@@ -47,16 +47,77 @@ class ExaminationService {
         return await examinationRepository.findExaminationById(id);
     }
 
+    async getAllExaminations() {
+        try {
+            return await examinationRepository.getAllExaminations();
+        } catch (error) {
+            throw new Error('Service error: ' + error.message);
+        }
+    }
+
     async getExaminationById(id) {
-        return await examinationRepository.findExaminationById(id);
+        try {
+            return await examinationRepository.getExaminationById(id);
+        } catch (error) {
+            throw new Error('Service error: ' + error.message);
+        }
+    }
+
+    async createExamination(examinationData) {
+        try {
+            // Validate examination data
+            if (!examinationData.lichKhamId) {
+                throw new Error('Appointment ID is required');
+            }
+
+            if (!examinationData.chanDoan || !examinationData.donThuoc) {
+                throw new Error('Diagnosis and prescription are required');
+            }
+
+            return await examinationRepository.createExamination(examinationData);
+        } catch (error) {
+            throw new Error('Service error: ' + error.message);
+        }
+    }
+
+    async updateExamination(id, examinationData) {
+        try {
+            return await examinationRepository.updateExamination(id, examinationData);
+        } catch (error) {
+            throw new Error('Service error: ' + error.message);
+        }
+    }
+
+    async deleteExamination(id) {
+        try {
+            return await examinationRepository.deleteExamination(id);
+        } catch (error) {
+            throw new Error('Service error: ' + error.message);
+        }
     }
 
     async getExaminationsByPatient(benhNhanId) {
-        return await examinationRepository.findExaminationsByPatient(benhNhanId);
+        try {
+            return await examinationRepository.getExaminationsByPatient(benhNhanId);
+        } catch (error) {
+            throw new Error('Service error: ' + error.message);
+        }
     }
 
     async getExaminationsByDoctor(bacSiId) {
-        return await examinationRepository.findExaminationsByDoctor(bacSiId);
+        try {
+            return await examinationRepository.getExaminationsByDoctor(bacSiId);
+        } catch (error) {
+            throw new Error('Service error: ' + error.message);
+        }
+    }
+
+    async completeExamination(id) {
+        try {
+            return await examinationRepository.updateExamination(id, { trangThai: 'completed' });
+        } catch (error) {
+            throw new Error('Service error: ' + error.message);
+        }
     }
 }
 

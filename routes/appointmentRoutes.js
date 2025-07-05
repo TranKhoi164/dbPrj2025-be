@@ -10,7 +10,20 @@ const {
 
 const router = require('express').Router()
 
-// lichKham: { ngay, gio, benhNhanId, bacSiId } 
+// Add GET route for appointments list (for frontend)
+router.get('/', async (req, res) => {
+  try {
+    // Mock data for now - you should implement actual logic
+    res.json({
+      lichKhams: [],
+      message: "Thành công!"
+    })
+  } catch (error) {
+    res.status(500).json({ message: error.message })
+  }
+})
+
+// lichKham: { ngay, gio, benhNhanId, bacSiId }
 router.post('/create', createAppointment)
 // lichKham: { id } 
 router.patch('/delete', deleteAppointment)

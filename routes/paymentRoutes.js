@@ -8,7 +8,20 @@ const {
 
 const router = require('express').Router()
 
-// donKham: { benhLy, mucDoBenh, dieuTri, benhNhanId, bacSiId } 
+// Add GET route for payments list (for frontend)
+router.get('/', async (req, res) => {
+  try {
+    // Mock data for now - you should implement actual logic
+    res.json({
+      thanhToans: [],
+      message: "Thành công!"
+    })
+  } catch (error) {
+    res.status(500).json({ message: error.message })
+  }
+})
+
+// donKham: { benhLy, mucDoBenh, dieuTri, benhNhanId, bacSiId }
 router.post('/create', createPayment)
 // donKham: { id, benhLy?, mucDoBenh?, dieuTri? } 
 router.patch('/update', updatePayment)

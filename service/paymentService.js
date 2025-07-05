@@ -48,15 +48,60 @@ class PaymentService {
     }
 
     async getPaymentById(id) {
-        return await paymentRepository.findPaymentById(id);
+        try {
+            return await paymentRepository.getPaymentById(id);
+        } catch (error) {
+            throw new Error('Service error: ' + error.message);
+        }
+    }
+
+    async getAllPayments() {
+        try {
+            return await paymentRepository.getAllPayments();
+        } catch (error) {
+            throw new Error('Service error: ' + error.message);
+        }
+    }
+
+    async deletePayment(id) {
+        try {
+            return await paymentRepository.deletePayment(id);
+        } catch (error) {
+            throw new Error('Service error: ' + error.message);
+        }
     }
 
     async getPaymentsByPatient(benhNhanId) {
-        return await paymentRepository.findPaymentsByPatient(benhNhanId);
+        try {
+            return await paymentRepository.getPaymentsByPatient(benhNhanId);
+        } catch (error) {
+            throw new Error('Service error: ' + error.message);
+        }
     }
 
     async getPaymentByAppointment(lichKhamId) {
-        return await paymentRepository.findPaymentByAppointment(lichKhamId);
+        try {
+            return await paymentRepository.getPaymentByAppointment(lichKhamId);
+        } catch (error) {
+            throw new Error('Service error: ' + error.message);
+        }
+    }
+
+    async completePayment(id) {
+        try {
+            return await paymentRepository.updatePayment(id, { hoanThanh: true });
+        } catch (error) {
+            throw new Error('Service error: ' + error.message);
+        }
+    }
+
+    async calculateTotalRevenue() {
+        try {
+            const payments = await paymentRepository.getAllPayments();
+            return payments.reduce((total, payment) => total + (payment.chiPhi || 0), 0);
+        } catch (error) {
+            throw new Error('Service error: ' + error.message);
+        }
     }
 }
 

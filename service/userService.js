@@ -58,8 +58,60 @@ class UserService {
         return user;
     }
 
+    async getAllPatients() {
+        try {
+            return await userRepository.getAllPatients();
+        } catch (error) {
+            throw new Error("Service error: " + error.message);
+        }
+    }
+
+    async getPatientById(id) {
+        try {
+            return await userRepository.getPatientById(id);
+        } catch (error) {
+            throw new Error("Service error: " + error.message);
+        }
+    }
+
+    async createPatient(patientData) {
+        try {
+            return await userRepository.createPatient(patientData);
+        } catch (error) {
+            throw new Error("Service error: " + error.message);
+        }
+    }
+
+    async updatePatient(id, patientData) {
+        try {
+            return await userRepository.updatePatient(id, patientData);
+        } catch (error) {
+            throw new Error("Service error: " + error.message);
+        }
+    }
+
+    async deletePatient(id) {
+        try {
+            return await userRepository.deletePatient(id);
+        } catch (error) {
+            throw new Error("Service error: " + error.message);
+        }
+    }
+
     async getAllDoctors() {
-        return await userRepository.findAllDoctors();
+        try {
+            return await userRepository.getAllDoctors();
+        } catch (error) {
+            throw new Error("Service error: " + error.message);
+        }
+    }
+
+    async getDoctorById(id) {
+        try {
+            return await userRepository.getDoctorById(id);
+        } catch (error) {
+            throw new Error("Service error: " + error.message);
+        }
     }
 }
 

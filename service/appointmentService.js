@@ -73,13 +73,52 @@ class AppointmentService {
         return await appointmentRepository.findAppointmentById(newAppointment.id);
     }
 
-    async getAppointmentById(id) {
-        return await appointmentRepository.findAppointmentById(id);
+    async getAllAppointments() {
+        try {
+            return await appointmentRepository.getAllAppointments();
+        } catch (error) {
+            throw new Error('Service error: ' + error.message);
+        }
     }
 
-    async completeAppointment(id) {
-        await appointmentRepository.updateAppointmentStatus(id, 'hoan_thanh');
-        return { message: "Hoàn thành lịch khám thành công!" };
+    async getAppointmentById(id) {
+        try {
+            return await appointmentRepository.getAppointmentById(id);
+        } catch (error) {
+            throw new Error('Service error: ' + error.message);
+        }
+    }
+
+    async updateAppointment(id, appointmentData) {
+        try {
+            return await appointmentRepository.updateAppointment(id, appointmentData);
+        } catch (error) {
+            throw new Error('Service error: ' + error.message);
+        }
+    }
+
+    async deleteAppointment(id) {
+        try {
+            return await appointmentRepository.deleteAppointment(id);
+        } catch (error) {
+            throw new Error('Service error: ' + error.message);
+        }
+    }
+
+    async getAppointmentsByPatient(benhNhanId) {
+        try {
+            return await appointmentRepository.getAppointmentsByPatient(benhNhanId);
+        } catch (error) {
+            throw new Error('Service error: ' + error.message);
+        }
+    }
+
+    async getAppointmentsByDoctor(bacSiId) {
+        try {
+            return await appointmentRepository.getAppointmentsByDoctor(bacSiId);
+        } catch (error) {
+            throw new Error('Service error: ' + error.message);
+        }
     }
 }
 
