@@ -83,5 +83,3 @@ dbPrj2025-be/
 - Express.js
 - Sequelize ORM
 - MySQL
-- JWT Authentication
-- bcryptjs
